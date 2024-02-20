@@ -1,22 +1,26 @@
 #!/usr/bin/node
+// A script that prints the number of movies where the character Wedge Antilles is present
 const request = require('request');
 
-const apiUrl = process.argv[2];
+const args = process.argv;
+const reqURL = args[2];
 
-request(apiUrl, (error, response, body) => {
+request(reqURL, function (error, response, body) {
   if (error) {
-    console.error(error);
-    return;
+    console.log('error:', error); // Print the error if one occurred
+  } else {
+    const jso = JSON.parse(body);
+    const results = jso.results;
+    let count = 0;
+    for (let i = 0; i < results.length; i++) {
+      const chars = (results[i].characters);
+      for (let j = 0; j < chars.length; j++) {
+        const check18 = chars[j].endsWith('18/');
+        if (check18) {
+          count++;
+        }
+      }
+    }
+    console.log(count);
   }
-
-  if (response.statusCode !== 200) {
-    console.error(`Request failed with status code ${response.statusCode}`);
-    return;
-  }
-
-  const filmsData = JSON.parse(body);
-  const wedgeAntillesMovies = filmsData.results
-    .filter(film => film.characters.includes('https://swapi-api.alx-tools.com/api/people/18/'));
-
-  console.log(`${wedgeAntillesMovies.length}`);
 });
